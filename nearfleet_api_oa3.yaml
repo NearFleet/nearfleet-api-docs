@@ -129,6 +129,9 @@ paths:
                   ship_to_name: John Doe
                   ship_to_address: 123 Main St, New York, NY 10001
                   pickup_location_id: 1
+                  client_id: 2
+                  service_provider_id: 3
+                  partner_id: 4
                   customer_name: John Doe
                   customer_email_address: john.doe@example.com
                   customer_phone: 555-123-4567
@@ -137,7 +140,7 @@ paths:
                     signature_required: true
                     adult_over_21: false
                     do_not_safe_drop: true
-                  content_flags:
+                  contents_flags:
                     fragile: true
                     perishable: false
                   insurance:
@@ -211,10 +214,13 @@ paths:
               UpdateSpecificPackageFields:
                 value:
                   delivery_instructions: Call customer before delivery
+                  client_id: 2
+                  service_provider_id: 3
+                  partner_id: 4
                   delivery_flags:
                     signature_required: true
                     adult_over_21: true
-                  content_flags:
+                  contents_flags:
                     contains_alcohol: true
                   insurance:
                     insured: true
@@ -607,6 +613,13 @@ components:
         order_id:
           type: string
           nullable: true
+        client_id:
+          type: integer
+        service_provider_id:
+          type: integer
+        partner_id:
+          type: integer
+          nullable: true
         customer_name:
           type: string
           nullable: true
@@ -625,7 +638,7 @@ components:
           maxLength: 20
         delivery_flags:
           $ref: '#/components/schemas/PackageDeliveryFlags'
-        content_flags:
+        contents_flags:
           $ref: '#/components/schemas/PackageContentsFlags'
         customer_intercom:
           type: string
@@ -871,6 +884,13 @@ components:
         order_id:
           type: string
           nullable: true
+        client_id:
+          type: integer
+        service_provider_id:
+          type: integer
+        partner_id:
+          type: integer
+          nullable: true
         customer_name:
           type: string
           nullable: true
@@ -889,7 +909,7 @@ components:
           maxLength: 20
         delivery_flags:
           $ref: '#/components/schemas/PackageDeliveryFlags'
-        content_flags:
+        contents_flags:
           $ref: '#/components/schemas/PackageContentsFlags'
         customer_intercom:
           type: string
