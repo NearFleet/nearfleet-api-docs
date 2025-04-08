@@ -1,0 +1,1117 @@
+openapi: 3.0.3
+info:
+  title: Nearfleet API
+  version: 1.0.0
+paths:
+  /api/clients/:
+    get:
+      operationId: clients_list
+      description: Returns a list of clients associated with this API key
+      summary: List clients
+      tags:
+      - clients
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExternalClient'
+          description: ''
+    post:
+      operationId: clients_create
+      description: Creates a new client with the provided details
+      summary: Create a new client
+      tags:
+      - clients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExternalClient'
+            examples:
+              StandardClientCreation:
+                value:
+                  name: ACME Corp
+                  contact_name: John Doe
+                  email_address: john.doe@example.com
+                  phone: 555-123-4567
+                  address: 123 Main St, Suite 100, San Francisco, CA 94105
+                summary: Standard client creation
+                description: Example of creating a standard client
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExternalClient'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExternalClient'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalClient'
+          description: ''
+  /api/clients/{id}/:
+    get:
+      operationId: clients_retrieve
+      description: Retrieves details for a specific client
+      summary: Retrieve a client
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this org.
+        required: true
+      tags:
+      - clients
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalClient'
+          description: ''
+    patch:
+      operationId: clients_partial_update
+      description: Updates a client with the provided details
+      summary: Update a client
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this org.
+        required: true
+      tags:
+      - clients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedExternalClient'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedExternalClient'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedExternalClient'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalClient'
+          description: ''
+  /api/packages/:
+    post:
+      operationId: packages_create
+      description: |-
+        Creates a new package with the provided details. The system will automatically:
+        - Generate a unique tracking number
+        - Verify the package address is in an active delivery area
+        - Assign a carrier based on that delivery area
+        - Generate a label for the package
+      summary: Create a new package
+      tags:
+      - packages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExternalPackage'
+            examples:
+              StandardPackageCreation:
+                value:
+                  ship_to_name: John Doe
+                  ship_to_address: 123 Main St, New York, NY 10001
+                  pickup_location_id: 1
+                  customer_name: John Doe
+                  customer_email_address: john.doe@example.com
+                  customer_phone: 555-123-4567
+                  delivery_instructions: Leave at front door
+                  delivery_flags:
+                    signature_required: true
+                    adult_over_21: false
+                    do_not_safe_drop: true
+                  content_flags:
+                    fragile: true
+                    perishable: false
+                  insurance:
+                    insured: true
+                    declared_value: 100.0
+                    insurance_amount: 75.0
+                    insurance_provider: Acme Insurance
+                    insurance_policy: POL-12345
+                  weight: 5.0
+                  length: 12
+                  width: 8
+                  height: 6
+                summary: Standard package creation
+                description: Example of creating a standard package
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExternalPackage'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExternalPackage'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalPackage'
+          description: ''
+  /api/packages/{id}/:
+    get:
+      operationId: packages_retrieve
+      description: Retrieves details for a specific package including rate information.
+        You can use either the package ID or tracking number in the URL.
+      summary: Retrieve a package
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: Package ID or tracking number (e.g., 123 or NF12345678)
+        required: true
+      tags:
+      - packages
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalPackage'
+          description: ''
+    patch:
+      operationId: packages_partial_update
+      description: Updates an existing package with the provided details. You can
+        use either the package ID or tracking number in the URL.
+      summary: Update an existing package
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: Package ID or tracking number (e.g., 123 or NF12345678)
+        required: true
+      tags:
+      - packages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedExternalPackage'
+            examples:
+              UpdateSpecificPackageFields:
+                value:
+                  delivery_instructions: Call customer before delivery
+                  delivery_flags:
+                    signature_required: true
+                    adult_over_21: true
+                  content_flags:
+                    contains_alcohol: true
+                  insurance:
+                    insured: true
+                    declared_value: 50.0
+                    insurance_provider: Global Insurance Co
+                summary: Update specific package fields
+                description: Example of updating specific package fields
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedExternalPackage'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedExternalPackage'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalPackage'
+          description: ''
+  /api/packages/{id}/label/:
+    get:
+      operationId: packages_label_retrieve
+      description: Retrieves the shipping label for a specific package. You can use
+        either the package ID or tracking number in the URL. The label image is returned
+        as a base64 encoded string.
+      summary: Get package label
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: Package ID or tracking number (e.g., 123 or NF12345678)
+        required: true
+      tags:
+      - packages
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabelResponse'
+          description: ''
+  /api/packages/{id}/pod_photos/:
+    get:
+      operationId: packages_pod_photos_retrieve
+      description: Retrieves multiple proof of delivery photos for a specific package.
+        You can use either the package ID or tracking number in the URL. The photos
+        are returned as base64 encoded strings.
+      summary: Get proof of delivery photos
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: Package ID or tracking number (e.g., 123 or NF12345678)
+        required: true
+      tags:
+      - packages
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PodPhotosResponse'
+          description: ''
+  /api/packages/{id}/signature/:
+    get:
+      operationId: packages_signature_retrieve
+      description: Retrieves the delivery signature for a specific package. You can
+        use either the package ID or tracking number in the URL. The signature image
+        is returned as a base64 encoded string.
+      summary: Get delivery signature
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: Package ID or tracking number (e.g., 123 or NF12345678)
+        required: true
+      tags:
+      - packages
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignatureResponse'
+          description: ''
+  /api/packages/{id}/tracking_status/:
+    get:
+      operationId: packages_tracking_status_retrieve
+      description: Retrieves the current tracking status for a specific package. You
+        can use either the package ID or tracking number in the URL.
+      summary: Get package tracking status
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: Package ID or tracking number (e.g., 123 or NF12345678)
+        required: true
+      tags:
+      - packages
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackingStatusResponse'
+          description: ''
+  /api/pickup_locations/:
+    get:
+      operationId: pickup_locations_list
+      description: Returns a list of pickup locations this API key
+      summary: List pickup locations
+      tags:
+      - pickup_locations
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExternalPickupLocation'
+          description: ''
+    post:
+      operationId: pickup_locations_create
+      description: Creates a new pickup location with the provided details
+      summary: Create a new pickup location
+      tags:
+      - pickup_locations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExternalPickupLocation'
+            examples:
+              StandardPickupLocationCreation:
+                value:
+                  client_id: 1
+                  name: Downtown Warehouse
+                  contact_name: Jane Smith
+                  email_address: jane.smith@example.com
+                  phone: 555-987-6543
+                  address: 456 Market St, San Francisco, CA 94105
+                summary: Standard pickup location creation
+                description: Example of creating a standard pickup location
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExternalPickupLocation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExternalPickupLocation'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalPickupLocation'
+          description: ''
+  /api/pickup_locations/{id}/:
+    get:
+      operationId: pickup_locations_retrieve
+      description: Retrieves details for a specific pickup location
+      summary: Retrieve a pickup location
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this location.
+        required: true
+      tags:
+      - pickup_locations
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalPickupLocation'
+          description: ''
+    patch:
+      operationId: pickup_locations_partial_update
+      description: Updates a pickup location with the provided details
+      summary: Update a pickup location
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this location.
+        required: true
+      tags:
+      - pickup_locations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedExternalPickupLocation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedExternalPickupLocation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedExternalPickupLocation'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalPickupLocation'
+          description: ''
+  /api/rates_and_availability/get_rate_estimate/:
+    post:
+      operationId: rates_and_availability_get_rate_estimate_create
+      description: Estimates the shipping rate for a package with the provided details
+      summary: Get rate estimate
+      tags:
+      - rates_and_availability
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RateEstimateRequest'
+            examples:
+              StandardRateEstimate:
+                value:
+                  client_id: 1
+                  pickup_location_id: 42
+                  service_level_id: 2
+                  ship_to_address: 123 Main St, New York, NY 10001
+                  height: 12.0
+                  width: 8.0
+                  length: 10.0
+                  weight: 80.0
+                summary: Standard rate estimate
+                description: 'Example of requesting a rate estimate with full address.
+                  Note: height, width, length are in inches; weight is in ounces.'
+              PostalCodeRateEstimate:
+                value:
+                  client_id: 1
+                  service_level_id: 1
+                  postal_code: '10001'
+                  height: 12.0
+                  width: 8.0
+                  length: 10.0
+                  weight: 80.0
+                summary: Postal code rate estimate
+                description: 'Example of requesting a rate estimate using postal code.
+                  Note: height, width, length are in inches; weight is in ounces.'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RateEstimateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RateEstimateRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateEstimateResponse'
+              examples:
+                RateEstimateResponse:
+                  value:
+                    package_size_id: 1
+                    postal_code: '10001'
+                    zone_name: Downtown
+                    base_rate: 10.0
+                  summary: Rate estimate response
+                  description: Example response for a rate estimate
+          description: ''
+        '400':
+          description: Error if rate cannot be estimated
+  /api/rates_and_availability/get_service_availability/:
+    get:
+      operationId: rates_and_availability_get_service_availability_retrieve
+      description: Check if a specific address is within a NearFleet service area
+      summary: Check service availability
+      parameters:
+      - in: query
+        name: address
+        schema:
+          type: string
+        description: Full address to check for service availability
+        required: true
+      tags:
+      - rates_and_availability
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  corrected_address:
+                    type: string
+                    description: Geocoded and formatted address
+                  is_service_available:
+                    type: boolean
+                    description: Whether NearFleet delivers to this address
+                  service_zone:
+                    type: string
+                    description: Zone code if service is available, null otherwise
+              examples:
+                ServiceAvailable:
+                  value:
+                    corrected_address: 123 Main St, New York, NY 10001, USA
+                    is_service_available: true
+                    service_zone: NYC-DOWNTOWN
+                  summary: Service available
+                  description: Example of an address where service is available
+                ServiceNotAvailable:
+                  value:
+                    corrected_address: 456 Rural Road, Remote Town, MT 59000, USA
+                    is_service_available: false
+                    service_zone: null
+                  summary: Service not available
+                  description: Example of an address where service is not available
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+          description: ''
+components:
+  schemas:
+    ExternalClient:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 80
+        contact_name:
+          type: string
+          nullable: true
+          maxLength: 255
+        email_address:
+          type: string
+          nullable: true
+          maxLength: 255
+        phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        address:
+          type: string
+          nullable: true
+      required:
+      - id
+      - name
+    ExternalPackage:
+      type: object
+      properties:
+        tracking_number:
+          type: string
+          readOnly: true
+        ship_to_name:
+          type: string
+        ship_to_address:
+          type: string
+        pickup_location_id:
+          type: integer
+        order_date:
+          type: string
+          format: date
+          nullable: true
+        base_rate:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          readOnly: true
+        client_reference_id:
+          type: string
+          nullable: true
+        order_id:
+          type: string
+          nullable: true
+        customer_name:
+          type: string
+          nullable: true
+          maxLength: 80
+        customer_email_address:
+          type: string
+          nullable: true
+          maxLength: 255
+        customer_phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        alternate_phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        delivery_flags:
+          $ref: '#/components/schemas/PackageDeliveryFlags'
+        content_flags:
+          $ref: '#/components/schemas/PackageContentsFlags'
+        customer_intercom:
+          type: string
+          nullable: true
+          maxLength: 20
+        gate_code:
+          type: string
+          nullable: true
+          maxLength: 20
+        door_code:
+          type: string
+          nullable: true
+          maxLength: 20
+        delivery_instructions:
+          type: string
+          nullable: true
+        weight:
+          type: number
+          format: double
+          maximum: 10000
+          minimum: -10000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        length:
+          type: number
+          format: double
+          maximum: 10000
+          minimum: -10000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        width:
+          type: number
+          format: double
+          maximum: 10000
+          minimum: -10000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        height:
+          type: number
+          format: double
+          maximum: 10000
+          minimum: -10000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        insurance:
+          $ref: '#/components/schemas/PackageInsurance'
+        declared_value:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          readOnly: true
+          nullable: true
+      required:
+      - base_rate
+      - declared_value
+      - pickup_location_id
+      - ship_to_address
+      - ship_to_name
+      - tracking_number
+    ExternalPickupLocation:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        client_id:
+          type: integer
+        name:
+          type: string
+        contact_name:
+          type: string
+        email_address:
+          type: string
+          format: email
+        phone:
+          type: string
+        address:
+          type: string
+      required:
+      - address
+      - client_id
+      - contact_name
+      - email_address
+      - id
+      - name
+      - phone
+    LabelResponse:
+      type: object
+      properties:
+        label_data:
+          type: string
+          description: Base64 encoded image data
+        content_type:
+          type: string
+          description: Content type of the image
+        filename:
+          type: string
+          description: Filename of the label
+      required:
+      - content_type
+      - filename
+      - label_data
+    PackageContentsFlags:
+      type: object
+      properties:
+        perishable:
+          type: boolean
+          default: false
+        refrigeration_required:
+          type: boolean
+          default: false
+        contains_alcohol:
+          type: boolean
+          default: false
+        contains_pharmaceuticals:
+          type: boolean
+          default: false
+        hazardous_materials:
+          type: boolean
+          default: false
+        dangerous_goods:
+          type: boolean
+          default: false
+        fragile:
+          type: boolean
+          default: false
+    PackageDeliveryFlags:
+      type: object
+      properties:
+        do_not_safe_drop:
+          type: boolean
+          default: false
+        contactless_delivery:
+          type: boolean
+          default: false
+        addressee_only:
+          type: boolean
+          default: false
+        adult_over_18:
+          type: boolean
+          default: false
+        adult_over_21:
+          type: boolean
+          default: false
+        id_photo_required:
+          type: boolean
+          default: false
+        id_scan_required:
+          type: boolean
+          default: false
+        signature_required:
+          type: boolean
+          default: false
+    PackageInsurance:
+      type: object
+      properties:
+        insured:
+          type: boolean
+          default: false
+        declared_value:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        insurance_amount:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        insurance_provider:
+          type: string
+          nullable: true
+        insurance_policy:
+          type: string
+          nullable: true
+    PatchedExternalClient:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 80
+        contact_name:
+          type: string
+          nullable: true
+          maxLength: 255
+        email_address:
+          type: string
+          nullable: true
+          maxLength: 255
+        phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        address:
+          type: string
+          nullable: true
+    PatchedExternalPackage:
+      type: object
+      properties:
+        tracking_number:
+          type: string
+          readOnly: true
+        ship_to_name:
+          type: string
+        ship_to_address:
+          type: string
+        pickup_location_id:
+          type: integer
+        order_date:
+          type: string
+          format: date
+          nullable: true
+        base_rate:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          readOnly: true
+        client_reference_id:
+          type: string
+          nullable: true
+        order_id:
+          type: string
+          nullable: true
+        customer_name:
+          type: string
+          nullable: true
+          maxLength: 80
+        customer_email_address:
+          type: string
+          nullable: true
+          maxLength: 255
+        customer_phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        alternate_phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        delivery_flags:
+          $ref: '#/components/schemas/PackageDeliveryFlags'
+        content_flags:
+          $ref: '#/components/schemas/PackageContentsFlags'
+        customer_intercom:
+          type: string
+          nullable: true
+          maxLength: 20
+        gate_code:
+          type: string
+          nullable: true
+          maxLength: 20
+        door_code:
+          type: string
+          nullable: true
+          maxLength: 20
+        delivery_instructions:
+          type: string
+          nullable: true
+        weight:
+          type: number
+          format: double
+          maximum: 10000
+          minimum: -10000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        length:
+          type: number
+          format: double
+          maximum: 10000
+          minimum: -10000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        width:
+          type: number
+          format: double
+          maximum: 10000
+          minimum: -10000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        height:
+          type: number
+          format: double
+          maximum: 10000
+          minimum: -10000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        insurance:
+          $ref: '#/components/schemas/PackageInsurance'
+        declared_value:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          readOnly: true
+          nullable: true
+    PatchedExternalPickupLocation:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        client_id:
+          type: integer
+        name:
+          type: string
+        contact_name:
+          type: string
+        email_address:
+          type: string
+          format: email
+        phone:
+          type: string
+        address:
+          type: string
+    PhotoItem:
+      type: object
+      properties:
+        photo_data:
+          type: string
+          description: Base64 encoded image data
+        content_type:
+          type: string
+          description: Content type of the image
+        filename:
+          type: string
+          description: Filename of the photo
+        timestamp:
+          type: string
+          format: date-time
+          description: When the photo was taken
+      required:
+      - content_type
+      - filename
+      - photo_data
+      - timestamp
+    PodPhotosResponse:
+      type: object
+      properties:
+        photos:
+          type: array
+          items:
+            $ref: '#/components/schemas/PhotoItem'
+          description: List of delivery photos
+      required:
+      - photos
+    RateEstimateRequest:
+      type: object
+      properties:
+        client_id:
+          type: integer
+          description: ID of the client
+        pickup_location_id:
+          type: integer
+          description: ID of the pickup location
+        service_level_id:
+          type: integer
+          description: ID of the service level
+        ship_to_address:
+          type: string
+          description: Full delivery address
+        postal_code:
+          type: string
+          description: Postal/ZIP code for delivery (alternative to ship_to_address)
+        height:
+          type: number
+          format: double
+          description: Height of the package (in inches)
+        width:
+          type: number
+          format: double
+          description: Width of the package (in inches)
+        length:
+          type: number
+          format: double
+          description: Length of the package (in inches)
+        weight:
+          type: number
+          format: double
+          description: Weight of the package (in ounces)
+      required:
+      - client_id
+      - pickup_location_id
+      - service_level_id
+    RateEstimateResponse:
+      type: object
+      properties:
+        package_size_id:
+          type: integer
+          description: ID of the package size
+        postal_code:
+          type: string
+          description: Postal code for the delivery address
+        zone_name:
+          type: string
+          description: Name of the delivery zone
+        base_rate:
+          type: number
+          format: double
+          maximum: 100000000
+          minimum: -100000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          description: Base rate for the package
+      required:
+      - base_rate
+      - package_size_id
+      - postal_code
+      - zone_name
+    SignatureResponse:
+      type: object
+      properties:
+        signature_data:
+          type: string
+          description: Base64 encoded image data
+        content_type:
+          type: string
+          description: Content type of the image
+        filename:
+          type: string
+          description: Filename of the signature
+        signatory_name:
+          type: string
+          description: Name of the person who signed
+        timestamp:
+          type: string
+          format: date-time
+          description: When the signature was captured
+      required:
+      - content_type
+      - filename
+      - signatory_name
+      - signature_data
+      - timestamp
+    TrackingStatusResponse:
+      type: object
+      properties:
+        package_id:
+          type: integer
+          description: ID of the package
+        tracking_number:
+          type: string
+          description: Tracking number of the package
+        package_status:
+          type: string
+          description: Current status of the package
+        last_tracking_event:
+          type: string
+          description: Description of the last tracking event
+        last_tracking_event_occurred:
+          type: string
+          format: date-time
+          description: When the last tracking event occurred
+      required:
+      - last_tracking_event
+      - last_tracking_event_occurred
+      - package_id
+      - package_status
+      - tracking_number
