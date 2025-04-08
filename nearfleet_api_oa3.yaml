@@ -129,8 +129,9 @@ paths:
                   ship_to_name: John Doe
                   ship_to_address: 123 Main St, New York, NY 10001
                   pickup_location_id: 1
+                  ship_from_name: Acme Warehouse
+                  ship_from_address: 456 Warehouse Blvd, New York, NY 10002
                   client_id: 2
-                  service_provider_id: 3
                   partner_id: 4
                   customer_name: John Doe
                   customer_email_address: john.doe@example.com
@@ -595,6 +596,14 @@ components:
           type: string
         pickup_location_id:
           type: integer
+        ship_from_name:
+          type: string
+          nullable: true
+          description: If not provided, defaults to pickup location name.
+        ship_from_address:
+          type: string
+          nullable: true
+          description: If not provided, defaults to pickup location address.
         order_date:
           type: string
           format: date
@@ -614,8 +623,6 @@ components:
           type: string
           nullable: true
         client_id:
-          type: integer
-        service_provider_id:
           type: integer
         partner_id:
           type: integer
@@ -703,6 +710,7 @@ components:
           nullable: true
       required:
       - base_rate
+      - client_id
       - declared_value
       - pickup_location_id
       - ship_to_address
@@ -866,6 +874,14 @@ components:
           type: string
         pickup_location_id:
           type: integer
+        ship_from_name:
+          type: string
+          nullable: true
+          description: If not provided, defaults to pickup location name.
+        ship_from_address:
+          type: string
+          nullable: true
+          description: If not provided, defaults to pickup location address.
         order_date:
           type: string
           format: date
@@ -885,8 +901,6 @@ components:
           type: string
           nullable: true
         client_id:
-          type: integer
-        service_provider_id:
           type: integer
         partner_id:
           type: integer
